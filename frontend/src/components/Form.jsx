@@ -2,6 +2,7 @@ import axios from 'axios'
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 const Form = () => {
     const [firstName, setFirstName] = useState('')
@@ -13,6 +14,18 @@ const Form = () => {
     const [confirmPassword, setConfirmPassword] = useState('')
     const [error, setError] = useState(false)
     const navigate = useNavigate();
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
 
     const fetchData = async () => {
         fetch('http://localhost:4000/api/users/')
@@ -33,17 +46,21 @@ const Form = () => {
             setError(true)
             console.log('Password do not match!!')
             return false
+
+
         }
     }
 
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        checkPass();
-        if (error) {
+        if (checkPass() === true) {
             const auth = data.find((item) => item.email === email)
             if (auth) {
-                console.log("user already exists")
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'User already exists!'
+                })
             } else {
                 try {
                     axios.post('http://localhost:4000/api/users', {
@@ -58,10 +75,20 @@ const Form = () => {
                     console.log("User inserted successfully")
                     setIsUserInserted(true)
                     navigate('/home/manageUser')
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'User inserted successfully'
+                    })
                 } catch (error) {
                     console.log(error)
                 }
             }
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Passwords do not match!',
+            });
         }
     }
 
@@ -104,15 +131,15 @@ const Form = () => {
     return (
         <div className=' flex justify-center h-[calc(100vh-67px)]'>
 
-            <form className=' w-2/5 mt-9  h-fit py-5 px-5 rounded-xl bg-slate-800' onSubmit={handleSubmit}>
+            <form className=' w-2/5 mt-9  h-fit py-5 px-5 rounded-xl bg-white' onSubmit={handleSubmit}>
                 <div className=''>
 
-                    {
+                    {/* {
                         error &&
                         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-5 text-center font-semibold" role="alert">
                             <span className="block sm:inline"> Passwords do not match</span>
                         </div>
-                    }
+                    } */}
                     <div className="relative z-0 w-full mb-6 group">
                         <input type="text" name="floating_first_name" id="floating_first_name" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required onChange={(e) => { setFirstName(e.target.value) }} />
                         <label htmlFor="floating_first_name" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">First name</label>

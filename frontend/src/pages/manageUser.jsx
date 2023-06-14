@@ -1,8 +1,11 @@
 import React from 'react'
+import Table from '../components/Table'
 
 const ManageUser = () => {
     return (
-        <div>ManageUser</div>
+        <div className=' bg-[#111827]'>
+            <Table />
+        </div>
     )
 }
 

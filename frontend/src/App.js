@@ -4,8 +4,10 @@ import Signup from "./pages/signup";
 import Home from "./pages/home.jsx";
 import AddUser from "./pages/addUser";
 import ManageUser from "./pages/manageUser";
+import Edit from "./components/Edit";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 function App() {
   return (
     <div className="App">
@@ -19,6 +21,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="addUser" element={<AddUser />} />
             <Route path="manageUser" element={<ManageUser />} />
+            <Route path="editUser" element={<Edit />} />
           </Route>
         </Routes>
       </BrowserRouter>
